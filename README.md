@@ -1,6 +1,9 @@
 # stable-diffusion-modal-docker
 How to deploy Stable Diffusion via Docker container using modal client
 
+![logotype-bb8cd083](https://user-images.githubusercontent.com/129726604/236659438-cad5d0eb-913d-47bf-b9d3-533360edd683.svg)
+![Docker-Logo-White-RGB_Horizontal-730x189-1](https://user-images.githubusercontent.com/129726604/236659618-4bd07fa5-c744-4f44-9473-b348af34a7a5.png)
+
 ## About
 I recommend using python docker container instead of using venv, since "download-output.py" did not work properly if the host machine's python version was 3.8 (default version of ubuntu20.04)
 
