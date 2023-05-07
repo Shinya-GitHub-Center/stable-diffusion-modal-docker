@@ -31,6 +31,19 @@ This can be done with proceeding [this](https://zenn.dev/cp20/articles/stable-di
         └── stable-diffusion-webui.py
 ```
 
+## How to deploy docker container
+@project's root directory
+```
+docker compose up -d
+docker exec -it <container name> bash
+modal run stable-diffusion-webui.py
+```
+
+## How to download generated pictures into your local machine
+```
+modal run download-output.py
+```
+
 ## Code for `Dockerfile`
 ```
 FROM python:latest
