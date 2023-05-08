@@ -93,15 +93,15 @@ import sys
 import shlex
 import os
 
-# modal系の変数の定義
+# Variables definition related to Modal service
 stub = modal.Stub("stable-diffusion-webui")
 volume_main = modal.SharedVolume().persist("stable-diffusion-webui-main")
 
-# 色んなパスの定義
+# Paths definition
 webui_dir = "/content/stable-diffusion-webui"
 webui_model_dir = webui_dir + "/models/Stable-diffusion/"
 
-# モデルのID
+# Model IDs on Hugging Face
 model_ids = [
     {
         "repo_id": "XpucT/Deliberate",
@@ -175,17 +175,17 @@ model_ids = [
     .pip_install("git+https://github.com/mlfoundations/open_clip.git@bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b"),
     secret=modal.Secret.from_name("my-huggingface-secret"),
     shared_volumes={webui_dir: volume_main},
-    gpu="T4",
+    gpu="A10G",
     timeout=6000,
 )
 async def run_stable_diffusion_webui():
-    print(Fore.CYAN + "\n---------- セットアップ開始 ----------\n")
+    print(Fore.CYAN + "\n---------- Start setting up for all models ----------\n")
 
     webui_dir_path = Path(webui_model_dir)
     if not webui_dir_path.exists():
         subprocess.run(f"git clone -b v2.2 https://github.com/camenduru/stable-diffusion-webui {webui_dir}", shell=True)
 
-    # Hugging faceからファイルをダウンロードしてくる関数
+    # Function definition used for downloading files from Hugging face
     def download_hf_file(repo_id, filename):
         from huggingface_hub import hf_hub_download
 
@@ -194,10 +194,10 @@ async def run_stable_diffusion_webui():
 
 
     for model_id in model_ids:
-        print(Fore.GREEN + model_id["repo_id"] + "のセットアップを開始します...")
+        print(Fore.GREEN + "Start setting up for " + model_id["repo_id"] + "....")
 
         if not Path(webui_model_dir + model_id["model_path"]).exists():
-            # モデルのダウンロード＆コピー
+            # Download and copy for model files
             model_downloaded_dir = download_hf_file(
                 model_id["repo_id"],
                 model_id["model_path"],
@@ -208,7 +208,7 @@ async def run_stable_diffusion_webui():
           continue
 
         if not Path(webui_model_dir + model_id["config_file_path"]).exists():
-            # コンフィグのダウンロード＆コピー
+            # Download and copy for config files
             config_downloaded_dir = download_hf_file(
                 model_id["repo_id"], model_id["config_file_path"]
             )
@@ -216,18 +216,18 @@ async def run_stable_diffusion_webui():
                 config_downloaded_dir, webui_model_dir + model_id["config_file_path"]
             )
 
-        print(Fore.GREEN + model_id["repo_id"] + "のセットアップが完了しました！")
+        print(Fore.GREEN + "Finished setting up for " + model_id["repo_id"] + "!")
 
-    print(Fore.CYAN + "\n---------- セットアップ完了 ----------\n")
+    print(Fore.CYAN + "\n---------- Finished setting up for all models ----------\n")
 
-    # WebUIを起動
+    # Activate WebUI
     sys.path.append(webui_dir)
     sys.argv += shlex.split("--skip-install --xformers")
     os.chdir(webui_dir)
     from launch import start, prepare_environment
 
     prepare_environment()
-    # 最初のargumentは無視されるので注意
+    # Note that the first argument will be ignored
     sys.argv = shlex.split("--a --gradio-debug --share --xformers")
     start()
 
@@ -287,7 +287,7 @@ def main():
 
   image_path_list = list_output_image_path.call(cache)
 
-  print(f'\n{len(image_path_list)}ファイルのダウンロードを行います\n')
+  print(f'\nTotal of {len(image_path_list)} files are now downloading....\n')
 
   future_list = []
   with futures.ThreadPoolExecutor(max_workers=10) as executor:
@@ -296,7 +296,7 @@ def main():
         future_list.append(future)
     _ = futures.as_completed(fs=future_list)
 
-  print(f'\nダウンロードが完了しました\n')
+  print(f'\nDownload completed!\n')
 ```
 ## As for LoRA file addition
 Put the LoRA files into Lora directory and execute the following command
