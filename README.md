@@ -194,7 +194,7 @@ async def run_stable_diffusion_webui():
 
 
     for model_id in model_ids:
-        print(Fore.GREEN + "Start setting up for " + model_id["repo_id"] + "....")
+        print(Fore.GREEN + model_id["repo_id"] + " : Start setting up")
 
         if not Path(webui_model_dir + model_id["model_path"]).exists():
             # Download and copy for model files
@@ -216,7 +216,7 @@ async def run_stable_diffusion_webui():
                 config_downloaded_dir, webui_model_dir + model_id["config_file_path"]
             )
 
-        print(Fore.GREEN + "Finished setting up for " + model_id["repo_id"] + "!")
+        print(Fore.GREEN + model_id["repo_id"] + " : Finished setting up!")
 
     print(Fore.CYAN + "\n---------- Finished setting up for all models ----------\n")
 
