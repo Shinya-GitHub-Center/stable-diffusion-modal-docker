@@ -303,6 +303,10 @@ Put the LoRA files into Lora directory and execute the following command
 ```
 modal volume put stable-diffusion-webui-main models/Lora/<lora file name> models/Lora/
 ```
+Alternatively, you can upload whole directory into Modal server (for multiple LoRA files at a time)
+```
+modal volume put stable-diffusion-webui-main models/Lora/ models/Lora/
+```
 
 ## As for deleting outputs folder on Modal server
 Sometimes upon executing `download-output.py`, the previously downloaded files are downloaded again, to prevent this, please execute the following command prior to creating any new pictures with stable diffusion webui
