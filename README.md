@@ -1,8 +1,8 @@
 # stable-diffusion-modal-docker
 How to deploy Stable Diffusion via Docker container using modal client
 
-![logotype-bb8cd083](https://user-images.githubusercontent.com/129726604/236659438-cad5d0eb-913d-47bf-b9d3-533360edd683.svg)
-![Docker-Logo-White-RGB_Horizontal-730x189-1](https://user-images.githubusercontent.com/129726604/236659618-4bd07fa5-c744-4f44-9473-b348af34a7a5.png)
+![logotype-bb8cd083](https://github.com/Shinya-GitHub-Center/stable-diffusion-modal-docker/assets/129726604/071b609b-7ba7-4435-8da4-f22b5fa99791)
+![horizontal-logo-monochromatic-white](https://github.com/Shinya-GitHub-Center/stable-diffusion-modal-docker/assets/129726604/7fcbb3c4-e62d-408b-b49b-fc4f9702952a)
 
 ## About
 I recommend using python docker container instead of using venv, since "download-output.py" did not work properly if the host machine's python version was 3.8 (default version of ubuntu20.04)
@@ -15,19 +15,19 @@ This can be done with proceeding [this](https://zenn.dev/cp20/articles/stable-di
 
 ```bash
 .
-├── docker
-│   └── modal-cli
+├── docker/
+│   └── modal-cli/
 │       └── Dockerfile
 ├── docker-compose.yml
-└── modal-cli
-    └── workdir
+└── modal-cli/
+    └── workdir/
         ├── download-output.py
-        ├── models
-        │   ├── Lora
-        │   └── Stable-diffusion
-        ├── outputs
-        │   ├── txt2img-grids
-        │   └── txt2img-images
+        ├── models/
+        │   ├── Lora/
+        │   └── Stable-diffusion/
+        ├── outputs/
+        │   ├── txt2img-grids/
+        │   └── txt2img-images/
         └── stable-diffusion-webui.py
 ```
 
