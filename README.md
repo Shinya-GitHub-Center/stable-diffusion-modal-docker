@@ -220,6 +220,9 @@ async def run_stable_diffusion_webui():
 
     print(Fore.CYAN + "\n---------- Finished setting up for all models ----------\n")
 
+    # Installation of Locon
+    subprocess.run(f"git clone https://github.com/Shinya-GitHub-Center/a1111-sd-webui-locon-my-customed /content/stable-diffusion-webui/extensions/locon", shell=True)
+
     # Activate WebUI
     sys.path.append(webui_dir)
     sys.argv += shlex.split("--skip-install --xformers")
