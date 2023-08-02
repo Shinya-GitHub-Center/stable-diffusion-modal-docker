@@ -120,14 +120,13 @@ model_ids = [
     },
 ]
 
-
 @stub.function(
-    image=modal.Image.from_dockerhub("python:3.8-slim")
+    image=modal.Image.from_dockerhub("python:3.10-slim")
     .apt_install(
-        "git", "libgl1-mesa-dev", "libglib2.0-0", "libsm6", "libxrender1", "libxext6"
+        "git", "libgl1-mesa-dev", "libglib2.0-0", "libsm6", "libxrender1", "libxext6", "gcc", "libcairo2-dev", "aria2"
     )
     .run_commands(
-        "pip install -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers"
+        "pip install -U -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers"
     )
     .pip_install(
         "blendmodes==2022",
@@ -175,8 +174,11 @@ model_ids = [
     .pip_install("git+https://github.com/mlfoundations/open_clip.git@bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b"),
     secret=modal.Secret.from_name("my-huggingface-secret"),
     shared_volumes={webui_dir: volume_main},
+    #Designate the target GPU
     gpu="A10G",
-    timeout=6000,
+    # gpu=modal.gpu.A10G(count=2),
+    # gpu=modal.gpu.T4(count=2),
+    timeout=12000,
 )
 async def run_stable_diffusion_webui():
     print(Fore.CYAN + "\n---------- Start setting up for all models ----------\n")
@@ -191,7 +193,6 @@ async def run_stable_diffusion_webui():
 
         download_dir = hf_hub_download(repo_id=repo_id, filename=filename)
         return download_dir
-
 
     for model_id in model_ids:
         print(Fore.GREEN + model_id["repo_id"] + " : Start setting up....")
@@ -221,6 +222,7 @@ async def run_stable_diffusion_webui():
     print(Fore.CYAN + "\n---------- Finished setting up for all models ----------\n")
 
     # Installation of Locon (if necessary)
+    # (officially fixed version ?? --> https://github.com/KohakuBlueleaf/a1111-sd-webui-lycoris)
     # subprocess.run(f"git clone https://github.com/Shinya-GitHub-Center/a1111-sd-webui-locon-my-customed \
     # /content/stable-diffusion-webui/extensions/locon", shell=True)
 
@@ -234,7 +236,6 @@ async def run_stable_diffusion_webui():
     # Note that the first argument will be ignored
     sys.argv = shlex.split("--a --gradio-debug --share --xformers")
     start()
-
 
 @stub.local_entrypoint
 def main():
@@ -319,4 +320,5 @@ modal volume rm -r stable-diffusion-webui-main outputs/
 ```
 
 ## Reference URL
+https://qiita.com/fkgw/items/eaa431b974af20b57179  
 https://zenn.dev/cp20/articles/stable-diffusion-webui-with-modal
