@@ -121,6 +121,9 @@ model_ids = [
 ]
 
 @stub.function(
+    # For forcing the docker image to rebuild
+    # https://modal.com/docs/guide/custom-container#forcing-an-image-to-rebuild
+    # image=modal.Image.from_dockerhub("python:3.10-slim", force_build=True)
     image=modal.Image.from_dockerhub("python:3.10-slim")
     .apt_install(
         "git", "libgl1-mesa-dev", "libglib2.0-0", "libsm6", "libxrender1", "libxext6", "gcc", "libcairo2-dev", "aria2"
@@ -304,19 +307,22 @@ def main():
   print(f'\nDownload completed!\n')
 ```
 ## As for LoRA file addition
-Put the LoRA files into Lora directory and execute the following command
+Put the LoRA files into Lora directory and execute the following command  
+(If you are using modal-client version below 0.50.2895, you may need to replace `nfs` with `volume`)
 ```
-modal volume put stable-diffusion-webui-main models/Lora/<lora file name> models/Lora/
+modal nfs put stable-diffusion-webui-main models/Lora/<lora file name> models/Lora/
 ```
-Alternatively, you can upload whole directory into Modal server (for multiple LoRA files at a time)
+Alternatively, you can upload whole directory into Modal server - for multiple LoRA files at a time  
+(If you are using modal-client version below 0.50.2895, you may need to replace `nfs` with `volume`)
 ```
-modal volume put stable-diffusion-webui-main models/Lora/ models/Lora/
+modal nfs put stable-diffusion-webui-main models/Lora/ models/Lora/
 ```
 
 ## As for deleting outputs folder on Modal server
-Sometimes upon executing `download-output.py`, the previously downloaded files are downloaded again, to prevent this, please execute the following command prior to creating any new pictures with stable diffusion webui
+Sometimes upon executing `download-output.py`, the previously downloaded files are downloaded again, to prevent this, please execute the following command prior to creating any new pictures with stable diffusion webui  
+(If you are using modal-client version below 0.50.2895, you may need to replace `nfs` with `volume`)
 ```
-modal volume rm -r stable-diffusion-webui-main outputs/
+modal nfs rm -r stable-diffusion-webui-main outputs/
 ```
 
 ## Reference URL
