@@ -325,6 +325,14 @@ Sometimes upon executing `download-output.py`, the previously downloaded files a
 modal nfs rm -r stable-diffusion-webui-main outputs/
 ```
 
+## As for forcing the docker image to rebuild
+If you want to rebuild docker image, such as for updating to the latest modules or packages, please refer to [here](https://modal.com/docs/guide/custom-container#forcing-an-image-to-rebuild)
+
+`stable-diffusion-webui.py`
+```
+image=modal.Image.from_dockerhub("python:3.10-slim", force_build=True)
+```
+
 ## Reference URL
 https://qiita.com/fkgw/items/eaa431b974af20b57179  
 https://zenn.dev/cp20/articles/stable-diffusion-webui-with-modal
