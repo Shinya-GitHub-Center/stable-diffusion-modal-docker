@@ -95,7 +95,7 @@ import os
 
 # Variables definition related to Modal service
 stub = modal.Stub("stable-diffusion-webui")
-volume_main = modal.SharedVolume().persist("stable-diffusion-webui-main")
+volume_main = modal.NetworkFileSystem.new().persisted("stable-diffusion-webui-main")
 
 # Paths definition
 webui_dir = "/content/stable-diffusion-webui"
@@ -176,7 +176,7 @@ model_ids = [
     )
     .pip_install("git+https://github.com/mlfoundations/open_clip.git@bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b"),
     secret=modal.Secret.from_name("my-huggingface-secret"),
-    shared_volumes={webui_dir: volume_main},
+    network_file_systems={webui_dir: volume_main},
     #Designate the target GPU
     gpu="A10G",
     # gpu=modal.gpu.A10G(count=2),
@@ -255,7 +255,7 @@ from concurrent import futures
 stub = modal.Stub("stable-diffusion-webui-download-output")
 
 volume_key = 'stable-diffusion-webui-main'
-volume = modal.SharedVolume().persist(volume_key)
+volume = modal.NetworkFileSystem.new().persisted(volume_key)
 
 webui_dir = "/content/stable-diffusion-webui/"
 remote_outputs_dir = 'outputs'
@@ -263,7 +263,7 @@ output_dir = "./outputs"
 
 
 @stub.function(
-    shared_volumes={webui_dir: volume},
+    network_file_systems={webui_dir: volume},
 )
 def list_output_image_path(cache: list[str]):
   absolute_remote_outputs_dir = os.path.join(webui_dir, remote_outputs_dir)
@@ -282,7 +282,7 @@ def list_output_image_path(cache: list[str]):
 def download_image_using_modal(image_path: str):
   download_dest = os.path.dirname(os.path.join(output_dir, image_path))
   os.makedirs(download_dest, exist_ok=True)
-  subprocess.run(f'modal volume get {volume_key} {os.path.join(remote_outputs_dir, image_path)} {download_dest}', shell=True)
+  subprocess.run(f'modal nfs get {volume_key} {os.path.join(remote_outputs_dir, image_path)} {download_dest}', shell=True)
 
 @stub.local_entrypoint
 def main():
