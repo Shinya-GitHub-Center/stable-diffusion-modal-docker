@@ -240,7 +240,7 @@ async def run_stable_diffusion_webui():
     sys.argv = shlex.split("--a --gradio-debug --share --xformers")
     start()
 
-@stub.local_entrypoint
+@stub.local_entrypoint()
 def main():
     run_stable_diffusion_webui.call()
 ```
@@ -284,7 +284,7 @@ def download_image_using_modal(image_path: str):
   os.makedirs(download_dest, exist_ok=True)
   subprocess.run(f'modal nfs get {volume_key} {os.path.join(remote_outputs_dir, image_path)} {download_dest}', shell=True)
 
-@stub.local_entrypoint
+@stub.local_entrypoint()
 def main():
   cache = []
 
