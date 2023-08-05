@@ -333,6 +333,17 @@ Alternatively, you can upload whole directory into Modal server - for multiple L
 modal nfs put stable-diffusion-webui-main models/Lora/ models/Lora/
 ```
 
+## As for adding models manually
+Put the model(checkpoint) files into Stable-diffusion directory and execute the following command  
+(If you are using modal-client version below 0.50.2895, you may need to replace `nfs` with `volume`)
+```
+modal nfs put stable-diffusion-webui-main models/Stable-diffusion/<model file name> models/Stable-diffusion/
+```
+or (whole directory at once)
+```
+modal nfs put stable-diffusion-webui-main models/Stable-diffusion/ models/Stable-diffusion/
+```
+
 ## As for deleting outputs folder on Modal server
 Sometimes upon executing `download-output.py`, the previously downloaded files are downloaded again, to prevent this, please execute the following command prior to creating any new pictures with stable diffusion webui  
 (If you are using modal-client version below 0.50.2895, you may need to replace `nfs` with `volume`)
