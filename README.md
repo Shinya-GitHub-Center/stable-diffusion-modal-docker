@@ -19,7 +19,12 @@ Prior to proceeding this project, you need to generate `.modal.toml` to your loc
     ```
     (`modal token new` command creates an API token by authenticating through your web browser. It will open a new tab, but you can close it when you are done.)
 
-4. Make sure that `.modal.toml` file has been created under the root of your local machine's home directory.
+3. Make sure that `.modal.toml` file has been created under the root of your local machine's home directory.
+4. Finish your venv environment.
+   ```
+   $ deactivate
+   ```
+   (Now, you can either delete that project or leave it there, it doesn't affect anything later)
 
 ## Create this directory into your local machine (I chose the root directory name for "stable-diffusion-modal-docker")
 
