@@ -26,6 +26,12 @@ Prior to proceeding this project, you need to generate `.modal.toml` to your loc
    ```
    (Now, you can either delete that project or leave it there, it doesn't affect anything later)
 
+## Copy the huggingface API Token value @ huggingface
+huggingface.co --> settings --> Access Tokens --> New token --> copy it
+
+## Paste it to modal's secret
+modal.com --> LOG IN --> SECRETS --> Create new secret --> Hugging Face --> Paste the value (key : HUGGINGFACE_TOKEN) --> next --> set the secret name to "my-huggingface-secret" --> create
+
 ## Create this directory into your local machine (I chose the root directory name for "stable-diffusion-modal-docker")
 
 ```bash
