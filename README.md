@@ -7,9 +7,19 @@ How to deploy Stable Diffusion via Docker container using modal client
 ## About
 I recommend using python docker container instead of using venv, since "download-output.py" did not work properly if the host machine's python version was 3.8 (default version of ubuntu20.04)
 
-## Preparing
-Prior to proceeding this project, you need to generate `.modal.toml` to your local machine's user home directory.  
-This can be done with proceeding [this](https://zenn.dev/cp20/articles/stable-diffusion-webui-with-modal#2.-modal%E3%82%92%E5%8B%95%E3%81%8B%E3%81%97%E3%81%A6%E3%81%BF%E3%82%8B) using venv. (seems like token file will be generated into host machine's home directory)
+## Preparing (required to generate "modal API token" file into your local machine's home directory)
+Prior to proceeding this project, you need to generate `.modal.toml` to your local machine's user home directory.
+1. Firtst of all, make sure that you have already installed python and venv into your local machine.
+2. Create your first modal project's folder somewhere, then execute the following command from the root of that project.
+    ```
+    $ python -m venv venv
+    $ source venv/bin/activate
+    $ pip install modal-client
+    $ modal token new
+    ```
+    (`modal token new` command creates an API token by authenticating through your web browser. It will open a new tab, but you can close it when you are done.)
+
+4. Make sure that `.modal.toml` file has been created under the root of your local machine's home directory.
 
 ## Create this directory into your local machine (I chose the root directory name for "stable-diffusion-modal-docker")
 
