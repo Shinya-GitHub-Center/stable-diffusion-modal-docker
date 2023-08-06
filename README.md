@@ -7,30 +7,15 @@ How to deploy Stable Diffusion via Docker container using modal client
 ## About
 I recommend using python docker container instead of using venv, since "download-output.py" did not work properly if the host machine's python version was 3.8 (default version of ubuntu20.04)
 
-## Preparing (required to generate "modal API token" file into your local machine's home directory)
-Prior to proceeding this project, you need to generate `.modal.toml` to your local machine's user home directory.
-1. Firtst of all, make sure that you have already installed python and venv into your local machine.
-2. Create your first modal project's folder somewhere, then execute the following command from the root of that project.
-    ```
-    $ python -m venv venv
-    $ source venv/bin/activate
-    $ pip install modal-client
-    $ modal token new
-    ```
-    (`modal token new` command creates an API token by authenticating through your web browser. It will open a new tab, but you can close it when you are done.)
-
-3. Make sure that `.modal.toml` file has been created under the root of your local machine's home directory.
-4. Finish your venv environment.
-   ```
-   $ deactivate
-   ```
-   (Now, you can either delete that project or leave it there, it doesn't affect anything later)
+## Create a Modal API Token designated only for use for this docker container project
+modal.com => LOG IN => SETTINGS => New Token => copy the command showed up below => close the window  
+(Do not lose the copied command, this will be required later...)
 
 ## Copy the huggingface API Token value @ huggingface
-huggingface.co --> Log In --> settings --> Access Tokens --> New token --> copy it
+huggingface.co => Log In => settings => Access Tokens => New token => copy it
 
-## Paste it to modal's secret
-modal.com --> LOG IN --> SECRETS --> Create new secret --> Hugging Face --> Paste the value (key : HUGGINGFACE_TOKEN) --> next --> set the secret name to "my-huggingface-secret" --> create
+## Paste the huggingface Token to modal's secret
+modal.com => LOG IN => SECRETS => Create new secret => Hugging Face => Paste the value (key : HUGGINGFACE_TOKEN) => next => set the secret name to "my-huggingface-secret" => create
 
 ## Create this directory into your local machine (I chose the root directory name for "stable-diffusion-modal-docker")
 
@@ -41,6 +26,7 @@ modal.com --> LOG IN --> SECRETS --> Create new secret --> Hugging Face --> Past
 │       └── Dockerfile
 ├── docker-compose.yml
 └── modal-cli/
+    ├── .modal.toml
     └── workdir/
         ├── download-output.py
         ├── models/
@@ -52,24 +38,24 @@ modal.com --> LOG IN --> SECRETS --> Create new secret --> Hugging Face --> Past
         └── stable-diffusion-webui.py
 ```
 
-## How to deploy docker container
-@project's root directory
+## Code for `.modal.toml`
 ```
-docker compose up -d
-docker exec -it <container name> bash
-modal run stable-diffusion-webui.py
+[default]
+token_id = "aa-aaaaaa"
+token_secret = "bb-bbbbbb"
 ```
+Please replace `aa-aaaaaa` and `bb-bbbbbb` with your previously copied modal token id and secret  
+(modal token set --token-id **aa-aaaaaa** --token-secret **bb-bbbbbb**)
 
-## How to download generated pictures into your local machine
-```
-modal run download-output.py
-```
+Please make sure any spaces is not included at the end of both id and secret
 
 ## Code for `Dockerfile`
 ```
 FROM python:latest
 ARG USERNAME=sd-webui
 ARG GROUPNAME=sd-webui
+# If your logging-in user at host has a different User / Group ID,
+# please change the both  of "1000" to your desired ID number.
 ARG UID=1000
 ARG GID=1000
 RUN groupadd -g $GID $GROUPNAME && \
@@ -95,7 +81,7 @@ services:
         source: ./modal-cli/workdir
         target: /home/sd-webui/workdir
       - type: bind
-        source: ~/.modal.toml
+        source: ./modal-cli/.modal.toml
         target: /home/sd-webui/.modal.toml
     user: sd-webui
     tty: true
@@ -246,7 +232,7 @@ async def run_stable_diffusion_webui():
     print(Fore.CYAN + "\n---------- Finished setting up for all models ----------\n")
 
     # Installation of Locon (if necessary)
-    # (officially fixed version ?? --> https://github.com/KohakuBlueleaf/a1111-sd-webui-lycoris)
+    # (officially fixed version ?? => https://github.com/KohakuBlueleaf/a1111-sd-webui-lycoris)
     # subprocess.run(f"git clone https://github.com/Shinya-GitHub-Center/a1111-sd-webui-locon-my-customed \
     # /content/stable-diffusion-webui/extensions/locon", shell=True)
 
@@ -327,6 +313,20 @@ def main():
 
   print(f'\nDownload completed!\n')
 ```
+
+## How to deploy docker container
+@project's root directory
+```
+docker compose up -d
+docker exec -it <container name> bash
+modal run stable-diffusion-webui.py
+```
+
+## How to download generated pictures into your local machine
+```
+modal run download-output.py
+```
+
 ## As for LoRA file addition
 Put the LoRA files into Lora directory and execute the following command  
 (If you are using modal-client version below 0.50.2895, you may need to replace `nfs` with `volume`)
