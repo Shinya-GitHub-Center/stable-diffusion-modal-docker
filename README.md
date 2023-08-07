@@ -51,11 +51,13 @@ Please make sure any spaces is not included at the end of both id and secret
 
 ## Code for `Dockerfile`
 ```
+# If your logging-in user at host has a different User / Group ID,
+# please change the both value for UID & GID : "1000"
+# to your desired ID number.
+
 FROM python:latest
 ARG USERNAME=sd-webui
 ARG GROUPNAME=sd-webui
-# If your logging-in user at host has a different User / Group ID,
-# please change the both  of "1000" to your desired ID number.
 ARG UID=1000
 ARG GID=1000
 RUN groupadd -g $GID $GROUPNAME && \
@@ -70,6 +72,11 @@ WORKDIR /home/sd-webui/workdir
 
 ## Code for `docker-compose.yml`
 ```
+# If you want to use the original ".modal.toml" file,
+# located at your host machine's user home directory,
+# please replace "source: ./modal-cli/.modal.toml"
+# with "source: ~/.modal.toml"
+
 version: "3.8"
 services:
   modal-cli:
