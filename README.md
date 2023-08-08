@@ -5,7 +5,7 @@ How to deploy Stable Diffusion via Docker container using modal client
 ![horizontal-logo-monochromatic-white](https://github.com/Shinya-GitHub-Center/stable-diffusion-modal-docker/assets/129726604/7fcbb3c4-e62d-408b-b49b-fc4f9702952a)
 
 ## About
-I recommend using python docker container instead of using venv, since "download-output.py" did not work properly if the host machine's python version was 3.8 (default version of ubuntu20.04)
+I recommend using python docker container instead of using venv, since `download-output.py` does not work properly if the host machine's python version is 3.8 (default version of ubuntu20.04)
 
 ## Create a Modal API Token designated only for use for this docker container project
 modal.com => LOG IN => SETTINGS => New Token => copy the command showed up below => close the window  
@@ -17,7 +17,7 @@ huggingface.co => Log In => settings => Access Tokens => New token => copy it
 ## Paste the huggingface Token to modal's secret
 modal.com => LOG IN => SECRETS => Create new secret => Hugging Face => Paste the value (key : HUGGINGFACE_TOKEN) => next => set the secret name to "my-huggingface-secret" => create
 
-## Create this directory into your local machine (I chose the root directory name for "stable-diffusion-modal-docker")
+## Create this directory into your local machine (I named the root directory name `stable-diffusion-modal-docker`)
 
 ```bash
 .
@@ -52,7 +52,7 @@ Please make sure any spaces is not included at the end of both id and secret
 ## Code for `Dockerfile`
 ```
 # If your logging-in user at host has a different User / Group ID,
-# please change the both value for UID & GID : "1000"
+# please change the both value for UID & GID `1000`
 # to your desired ID number.
 
 FROM python:latest
@@ -72,10 +72,10 @@ WORKDIR /home/sd-webui/workdir
 
 ## Code for `docker-compose.yml`
 ```
-# If you want to use the original ".modal.toml" file,
+# If you want to use the original `.modal.toml` file,
 # located at your host machine's user home directory,
-# please replace "source: ./modal-cli/.modal.toml"
-# with "source: ~/.modal.toml"
+# please replace `source: ./modal-cli/.modal.toml`
+# with `source: ~/.modal.toml`
 
 version: "3.8"
 services:
