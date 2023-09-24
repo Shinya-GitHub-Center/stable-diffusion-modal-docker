@@ -137,8 +137,8 @@ model_ids = [
 @stub.function(
     # For forcing the docker image to rebuild
     # https://modal.com/docs/guide/custom-container#forcing-an-image-to-rebuild
-    # image=modal.Image.from_dockerhub("python:3.10-slim", force_build=True)
-    image=modal.Image.from_dockerhub("python:3.10-slim")
+    # image=modal.Image.from_registry("python:3.10-slim", force_build=True)
+    image=modal.Image.from_registry("python:3.10-slim")
     .apt_install(
         "git", "libgl1-mesa-dev", "libglib2.0-0", "libsm6", "libxrender1", "libxext6", "gcc", "libcairo2-dev", "aria2"
     )
@@ -256,7 +256,7 @@ async def run_stable_diffusion_webui():
 
 @stub.local_entrypoint()
 def main():
-    run_stable_diffusion_webui.call()
+    run_stable_diffusion_webui.remote()
 ```
 
 ## Code for `download-output.py`
@@ -307,7 +307,7 @@ def main():
       relativeFilePath = os.path.join(root, file)[len(output_dir) :]
       cache.append(relativeFilePath)
 
-  image_path_list = list_output_image_path.call(cache)
+  image_path_list = list_output_image_path.remote(cache)
 
   print(f'\nTotal of {len(image_path_list)} files are now downloading....\n')
 
