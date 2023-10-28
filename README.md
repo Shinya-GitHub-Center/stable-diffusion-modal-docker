@@ -55,7 +55,7 @@ Please make sure any spaces is not included at the end of both id and secret
 # please change the both value for UID & GID `1000`
 # to your desired ID number.
 
-FROM python:latest
+FROM python:3.11.6
 ARG USERNAME=sd-webui
 ARG GROUPNAME=sd-webui
 ARG UID=1000
@@ -66,7 +66,7 @@ WORKDIR /home/sd-webui
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y vim less tree jq
-RUN pip install modal-client colorama pathlib
+RUN pip install modal colorama pathlib
 WORKDIR /home/sd-webui/workdir
 ```
 
