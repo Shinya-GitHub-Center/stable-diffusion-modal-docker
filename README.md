@@ -413,5 +413,5 @@ image=modal.Image.from_registry("python:3.10.6-slim", force_build=True)
 
 ## Reference URL
 https://qiita.com/fkgw/items/eaa431b974af20b57179  
-https://zenn.dev/cp20/articles/stable-diffusion-webui-with-modal
+https://zenn.dev/cp20/articles/stable-diffusion-webui-with-modal  
 https://note.com/light_impala137/n/n99b014389a69
