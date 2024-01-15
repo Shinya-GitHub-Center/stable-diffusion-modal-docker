@@ -1,0 +1,21 @@
+# If you want to use the original `.modal.toml` file,
+# located at your host machine's user home directory,
+# please replace `source: ./modal-cli/.modal.toml`
+# with `source: ~/.modal.toml`
+
+version: "3.8"
+services:
+  modal-cli:
+    build:
+      context: ./docker/modal-cli
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind
+        source: ./modal-cli/workdir
+        target: /home/sd-webui/workdir
+      - type: bind
+        source: ./modal-cli/.modal.toml
+        target: /home/sd-webui/.modal.toml
+    user: sd-webui
+    tty: true
+    stdin_open: true

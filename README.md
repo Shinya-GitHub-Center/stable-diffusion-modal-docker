@@ -31,7 +31,8 @@ modal.com => LOG IN => SECRETS => Create new secret => Hugging Face => Paste the
         ├── download-output.py
         ├── models/
         │   ├── Lora/
-        │   └── Stable-diffusion/
+        │   ├── Stable-diffusion/
+        │   └── VAE/
         ├── outputs/
         │   ├── txt2img-grids/
         │   └── txt2img-images/
@@ -55,7 +56,7 @@ Please make sure any spaces is not included at the end of both id and secret
 # please change the both value for UID & GID `1000`
 # to your desired ID number.
 
-FROM python:3.11.6
+FROM python:3.10.6
 ARG USERNAME=sd-webui
 ARG GROUPNAME=sd-webui
 ARG UID=1000
@@ -97,6 +98,10 @@ services:
 
 ## Code for `stable-diffusion-webui.py`
 ```
+# This script is made referencing these awesome Japanese websites!
+# https://zenn.dev/cp20/articles/stable-diffusion-webui-with-modal
+# https://note.com/light_impala137/n/n99b014389a69
+
 from colorama import Fore
 from pathlib import Path
 
@@ -121,60 +126,66 @@ model_ids = [
         "repo_id": "XpucT/Deliberate",
         "model_path": "Deliberate_v2.safetensors",
         "config_file_path": "",
+        "model_name": "Deliberate_v2.safetensors",
     },
     {
-        "repo_id": "sazyou-roukaku/chilled_remix",
-        "model_path": "chilled_remix_v1vae.safetensors",
+        "repo_id": "WarriorMama777/OrangeMixs",
+        "model_path": "Models/BloodOrangeMix/BloodNightOrangeMix.ckpt",
         "config_file_path": "",
-    },
-    {
-        "repo_id": "Lykon/NeverEnding-Dream",
-        "model_path": "NeverEndingDream_ft_mse.safetensors",
-        "config_file_path": "",
+        "model_name": "BloodNightOrangeMix.ckpt",
     },
 ]
+
 
 @stub.function(
     # For forcing the docker image to rebuild
     # https://modal.com/docs/guide/custom-container#forcing-an-image-to-rebuild
-    # image=modal.Image.from_registry("python:3.10-slim", force_build=True)
-    image=modal.Image.from_registry("python:3.10-slim")
+    # image=modal.Image.from_registry("python:3.10.6-slim", force_build=True)
+    image=modal.Image.from_registry("python:3.10.6-slim")
     .apt_install(
-        "git", "libgl1-mesa-dev", "libglib2.0-0", "libsm6", "libxrender1", "libxext6", "gcc", "libcairo2-dev", "aria2"
+        "git",
+        "libgl1-mesa-dev",
+        "libglib2.0-0",
+        "libsm6",
+        "libxrender1",
+        "libxext6",
+        "gcc",
+        "libcairo2-dev",
+        "aria2",
     )
     .run_commands(
-        "pip install -U -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers"
+        "pip install -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers"
     )
     .pip_install(
         "blendmodes==2022",
-        "transformers==4.25.1",
-        "accelerate==0.12.0",
+        "transformers==4.30.2",
+        "accelerate==0.21.0",
         "basicsr==1.4.2",
         "gfpgan==1.3.8",
-        "gradio==3.16.2",
-        "numpy==1.23.3",
-        "Pillow==9.4.0",
+        "gradio==3.41.2",
+        "numpy==1.23.5",
+        "Pillow==9.5.0",
         "realesrgan==0.3.0",
         "torch",
         "omegaconf==2.2.3",
-        "pytorch_lightning==1.7.6",
-        "scikit-image==0.19.2",
+        "pytorch_lightning==1.9.4",
+        "scikit-image==0.21.0",
         "fonts",
         "font-roboto",
-        "timm==0.6.7",
+        "timm==0.9.2",
         "piexif==1.1.3",
         "einops==0.4.1",
         "jsonmerge==1.8.0",
-        "clean-fid==0.1.29",
+        "clean-fid==0.1.35",
         "resize-right==0.0.2",
         "torchdiffeq==0.2.3",
         "kornia==0.6.7",
         "lark==1.1.2",
         "inflection==0.5.1",
-        "GitPython==3.1.27",
+        "GitPython==3.1.32",
         "torchsde==0.2.5",
-        "safetensors==0.2.7",
-        "httpcore<=0.15",
+        "safetensors==0.3.1",
+        "httpcore==0.15",
         "tensorboard==2.9.1",
         "taming-transformers==0.0.1",
         "clip",
@@ -187,11 +198,19 @@ model_ids = [
         "gdown",
         "huggingface_hub",
         "colorama",
+        "torchmetrics==0.11.4",
+        "fastapi==0.94.0",
+        "open-clip-torch==2.20.0",
+        "psutil==5.9.5",
+        "tomesd==0.1.3",
+        "httpx==0.24.1",
     )
-    .pip_install("git+https://github.com/mlfoundations/open_clip.git@bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b"),
+    .pip_install(
+        "git+https://github.com/mlfoundations/open_clip.git@bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b"
+    ),
     secret=modal.Secret.from_name("my-huggingface-secret"),
     network_file_systems={webui_dir: volume_main},
-    #Designate the target GPU
+    # Designate the target GPU
     gpu="A10G",
     # gpu=modal.gpu.A10G(count=2),
     # gpu=modal.gpu.T4(count=2),
@@ -202,7 +221,10 @@ async def run_stable_diffusion_webui():
 
     webui_dir_path = Path(webui_model_dir)
     if not webui_dir_path.exists():
-        subprocess.run(f"git clone -b v2.2 https://github.com/camenduru/stable-diffusion-webui {webui_dir}", shell=True)
+        subprocess.run(
+            f"git clone -b v2.6 https://github.com/camenduru/stable-diffusion-webui {webui_dir}",
+            shell=True,
+        )
 
     # Function definition used for downloading files from Hugging face
     def download_hf_file(repo_id, filename):
@@ -214,16 +236,19 @@ async def run_stable_diffusion_webui():
     for model_id in model_ids:
         print(Fore.GREEN + model_id["repo_id"] + " : Start setting up....")
 
-        if not Path(webui_model_dir + model_id["model_path"]).exists():
+        if not Path(webui_model_dir + model_id["model_name"]).exists():
             # Download and copy for model files
             model_downloaded_dir = download_hf_file(
                 model_id["repo_id"],
                 model_id["model_path"],
             )
-            shutil.copy(model_downloaded_dir, webui_model_dir + model_id["model_path"])
+            shutil.copy(
+                model_downloaded_dir,
+                webui_model_dir + os.path.basename(model_id["model_path"]),
+            )
 
         if "config_file_path" not in model_id:
-          continue
+            continue
 
         if not Path(webui_model_dir + model_id["config_file_path"]).exists():
             # Download and copy for config files
@@ -231,17 +256,13 @@ async def run_stable_diffusion_webui():
                 model_id["repo_id"], model_id["config_file_path"]
             )
             shutil.copy(
-                config_downloaded_dir, webui_model_dir + model_id["config_file_path"]
+                config_downloaded_dir,
+                webui_model_dir + os.path.basename(model_id["config_file_path"]),
             )
 
         print(Fore.GREEN + model_id["repo_id"] + " : Finished setting up!")
 
     print(Fore.CYAN + "\n---------- Finished setting up for all models ----------\n")
-
-    # Installation of Locon (if necessary)
-    # (officially fixed version ?? => https://github.com/KohakuBlueleaf/a1111-sd-webui-lycoris)
-    # subprocess.run(f"git clone https://github.com/Shinya-GitHub-Center/a1111-sd-webui-locon-my-customed \
-    # /content/stable-diffusion-webui/extensions/locon", shell=True)
 
     # Activate WebUI
     sys.path.append(webui_dir)
@@ -251,8 +272,9 @@ async def run_stable_diffusion_webui():
 
     prepare_environment()
     # Note that the first argument will be ignored
-    sys.argv = shlex.split("--a --gradio-debug --share --xformers")
+    sys.argv = shlex.split("--a --gradio-debug --share --xformers --skip-version-check")
     start()
+
 
 @stub.local_entrypoint()
 def main():
@@ -261,6 +283,9 @@ def main():
 
 ## Code for `download-output.py`
 ```
+# This script is made referencing these awesome Japanese websites!
+# https://zenn.dev/cp20/articles/stable-diffusion-webui-with-modal
+
 import os
 import modal
 import subprocess
@@ -268,11 +293,11 @@ from concurrent import futures
 
 stub = modal.Stub("stable-diffusion-webui-download-output")
 
-volume_key = 'stable-diffusion-webui-main'
+volume_key = "stable-diffusion-webui-main"
 volume = modal.NetworkFileSystem.new().persisted(volume_key)
 
 webui_dir = "/content/stable-diffusion-webui/"
-remote_outputs_dir = 'outputs'
+remote_outputs_dir = "outputs"
 output_dir = "./outputs"
 
 
@@ -280,45 +305,50 @@ output_dir = "./outputs"
     network_file_systems={webui_dir: volume},
 )
 def list_output_image_path(cache: list[str]):
-  absolute_remote_outputs_dir = os.path.join(webui_dir, remote_outputs_dir)
-  image_path_list = []
-  for root, dirs, files in os.walk(top=absolute_remote_outputs_dir):
-    for file in files:
-      if not file.lower().endswith(('.png', '.jpg', '.jpeg')):
-        continue
+    absolute_remote_outputs_dir = os.path.join(webui_dir, remote_outputs_dir)
+    image_path_list = []
+    for root, dirs, files in os.walk(top=absolute_remote_outputs_dir):
+        for file in files:
+            if not file.lower().endswith((".png", ".jpg", ".jpeg")):
+                continue
 
-      absolutefilePath = os.path.join(root, file)
-      relativeFilePath = absolutefilePath[(len(absolute_remote_outputs_dir)) :]
-      if not relativeFilePath in cache:
-        image_path_list.append(relativeFilePath.lstrip('/'))
-  return image_path_list
+            absolutefilePath = os.path.join(root, file)
+            relativeFilePath = absolutefilePath[(len(absolute_remote_outputs_dir)) :]
+            if not relativeFilePath in cache:
+                image_path_list.append(relativeFilePath.lstrip("/"))
+    return image_path_list
+
 
 def download_image_using_modal(image_path: str):
-  download_dest = os.path.dirname(os.path.join(output_dir, image_path))
-  os.makedirs(download_dest, exist_ok=True)
-  subprocess.run(f'modal nfs get {volume_key} {os.path.join(remote_outputs_dir, image_path)} {download_dest}', shell=True)
+    download_dest = os.path.dirname(os.path.join(output_dir, image_path))
+    os.makedirs(download_dest, exist_ok=True)
+    subprocess.run(
+        f"modal nfs get {volume_key} {os.path.join(remote_outputs_dir, image_path)} {download_dest}",
+        shell=True,
+    )
+
 
 @stub.local_entrypoint()
 def main():
-  cache = []
+    cache = []
 
-  for root, dirs, files in os.walk(top=output_dir):
-    for file in files:
-      relativeFilePath = os.path.join(root, file)[len(output_dir) :]
-      cache.append(relativeFilePath)
+    for root, dirs, files in os.walk(top=output_dir):
+        for file in files:
+            relativeFilePath = os.path.join(root, file)[len(output_dir) :]
+            cache.append(relativeFilePath)
 
-  image_path_list = list_output_image_path.remote(cache)
+    image_path_list = list_output_image_path.remote(cache)
 
-  print(f'\nTotal of {len(image_path_list)} files are now downloading....\n')
+    print(f"\nTotal of {len(image_path_list)} files are now being downloaded....\n")
 
-  future_list = []
-  with futures.ThreadPoolExecutor(max_workers=10) as executor:
-    for image_path in image_path_list:
-        future = executor.submit(download_image_using_modal, image_path=image_path)
-        future_list.append(future)
-    _ = futures.as_completed(fs=future_list)
+    future_list = []
+    with futures.ThreadPoolExecutor(max_workers=10) as executor:
+        for image_path in image_path_list:
+            future = executor.submit(download_image_using_modal, image_path=image_path)
+            future_list.append(future)
+        _ = futures.as_completed(fs=future_list)
 
-  print(f'\nDownload completed!\n')
+    print(f"\nDownload completed!\n")
 ```
 
 ## How to deploy docker container
@@ -335,31 +365,40 @@ modal run download-output.py
 ```
 
 ## As for LoRA file addition
-Put the LoRA files into Lora directory and execute the following command  
-(If you are using modal-client version below 0.50.2895, you may need to replace `nfs` with `volume`)
+Put the LoRA files into Lora directory and execute the following command
 ```
 modal nfs put stable-diffusion-webui-main models/Lora/<lora file name> models/Lora/
 ```
 Alternatively, you can upload whole directory into Modal server - for multiple LoRA files at a time  
-(If you are using modal-client version below 0.50.2895, you may need to replace `nfs` with `volume`)
+(this procedure will overwrite the previously located any Lora files)
 ```
 modal nfs put stable-diffusion-webui-main models/Lora/ models/Lora/
 ```
 
+## As for VAE file addition
+Put the VAE files into VAE directory and execute the following command
+```
+modal nfs put stable-diffusion-webui-main models/VAE/<vae file name> models/VAE/
+```
+Alternatively, you can upload whole directory into Modal server - for multiple VAE files at a time  
+(this procedure will overwrite the previously located any VAE files)
+```
+modal nfs put stable-diffusion-webui-main models/VAE/ models/VAE/
+```
+
 ## As for adding models manually
-Put the model(checkpoint) files into Stable-diffusion directory and execute the following command  
-(If you are using modal-client version below 0.50.2895, you may need to replace `nfs` with `volume`)
+Put any model files (including base and refiner models) into Stable-diffusion directory and execute the following command
 ```
 modal nfs put stable-diffusion-webui-main models/Stable-diffusion/<model file name> models/Stable-diffusion/
 ```
-or (whole directory at once)
+or, whole directory at once  
+(this procedure will overwrite the previously located any models)
 ```
 modal nfs put stable-diffusion-webui-main models/Stable-diffusion/ models/Stable-diffusion/
 ```
 
 ## As for deleting outputs folder on Modal server
-Sometimes upon executing `download-output.py`, the previously downloaded files are downloaded again, to prevent this, please execute the following command prior to creating any new pictures with stable diffusion webui  
-(If you are using modal-client version below 0.50.2895, you may need to replace `nfs` with `volume`)
+Sometimes upon executing `download-output.py`, the previously downloaded files are downloaded again, to prevent this, please execute the following command prior to creating any new pictures with stable diffusion webui
 ```
 modal nfs rm -r stable-diffusion-webui-main outputs/
 ```
@@ -369,9 +408,10 @@ If you want to rebuild docker image, such as for updating to the latest modules 
 
 `stable-diffusion-webui.py`
 ```
-image=modal.Image.from_dockerhub("python:3.10-slim", force_build=True)
+image=modal.Image.from_registry("python:3.10.6-slim", force_build=True)
 ```
 
 ## Reference URL
 https://qiita.com/fkgw/items/eaa431b974af20b57179  
 https://zenn.dev/cp20/articles/stable-diffusion-webui-with-modal
+https://note.com/light_impala137/n/n99b014389a69
