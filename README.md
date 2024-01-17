@@ -216,13 +216,12 @@ model_ids = [
     # gpu=modal.gpu.T4(count=2),
     timeout=12000,
 )
-async def run_stable_diffusion_webui():
+async def run_stable_diffusion_webui(): 
+    subprocess.run("git config --global http.postBuffer 200M", shell=True)
     print(Fore.CYAN + "\n---------- Start setting up for all models ----------\n")
 
     webui_dir_path = Path(webui_model_dir)
     if not webui_dir_path.exists():
-        # If you encountered RPC failure related error upon git cloning
-        # subprocess.run("git config --global http.postBuffer 200M", shell=True)
         subprocess.run(
             f"git clone -b v2.6 https://github.com/camenduru/stable-diffusion-webui {webui_dir}",
             shell=True,
