@@ -216,7 +216,7 @@ model_ids = [
     # gpu=modal.gpu.T4(count=2),
     timeout=12000,
 )
-async def run_stable_diffusion_webui(): 
+async def run_stable_diffusion_webui():
     subprocess.run("git config --global http.postBuffer 200M", shell=True)
     print(Fore.CYAN + "\n---------- Start setting up for all models ----------\n")
 
