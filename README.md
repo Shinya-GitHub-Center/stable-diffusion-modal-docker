@@ -399,6 +399,12 @@ or, whole directory at once
 modal nfs put stable-diffusion-webui-main models/Stable-diffusion/ models/Stable-diffusion/
 ```
 
+## As for adding embedding files
+Put any embedding files into `workdir/embeddings/` folder then,
+```
+modal nfs put stable-diffusion-webui-main embeddings/<embedding file name> embeddings/
+```
+
 ## As for deleting outputs folder on Modal server
 Sometimes upon executing `download-output.py`, the previously downloaded files are downloaded again, to prevent this, please execute the following command prior to creating any new pictures with stable diffusion webui
 ```
