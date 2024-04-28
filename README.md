@@ -78,7 +78,6 @@ WORKDIR /home/sd-webui/workdir
 # please replace `source: ./modal-cli/.modal.toml`
 # with `source: ~/.modal.toml`
 
-version: "3.8"
 services:
   modal-cli:
     build:
