@@ -14,7 +14,7 @@ import os
 
 # Variables definition related to Modal service
 stub = modal.Stub("stable-diffusion-webui")
-volume_main = modal.NetworkFileSystem.new().persisted("stable-diffusion-webui-main")
+volume_main = modal.NetworkFileSystem.from_name("stable-diffusion-webui-main")
 
 # Paths definition
 webui_dir = "/content/stable-diffusion-webui"
@@ -124,7 +124,7 @@ async def run_stable_diffusion_webui():
         # If you encountered RPC failure related error upon git cloning
         # subprocess.run("git config --global http.postBuffer 200M", shell=True)
         subprocess.run(
-            f"git clone -b v2.6 https://github.com/camenduru/stable-diffusion-webui {webui_dir}",
+            f"git clone -b v2.7 https://github.com/camenduru/stable-diffusion-webui {webui_dir}",
             shell=True,
         )
 

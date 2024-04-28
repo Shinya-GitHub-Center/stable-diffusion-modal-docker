@@ -9,7 +9,7 @@ from concurrent import futures
 stub = modal.Stub("stable-diffusion-webui-download-output")
 
 volume_key = "stable-diffusion-webui-main"
-volume = modal.NetworkFileSystem.new().persisted(volume_key)
+volume = modal.NetworkFileSystem.from_name(volume_key)
 
 webui_dir = "/content/stable-diffusion-webui/"
 remote_outputs_dir = "outputs"
