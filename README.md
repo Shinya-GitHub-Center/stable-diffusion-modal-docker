@@ -113,7 +113,7 @@ import os
 
 # Variables definition related to Modal service
 stub = modal.Stub("stable-diffusion-webui")
-volume_main = modal.NetworkFileSystem.from_name("stable-diffusion-webui-main")
+volume_main = modal.NetworkFileSystem.from_name("stable-diffusion-webui-main", create_if_missing=True)
 
 # Paths definition
 webui_dir = "/content/stable-diffusion-webui"
