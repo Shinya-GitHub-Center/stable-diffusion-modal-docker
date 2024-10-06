@@ -112,7 +112,7 @@ import shlex
 import os
 
 # Variables definition related to Modal service
-stub = modal.Stub("stable-diffusion-webui")
+app = modal.App("stable-diffusion-webui")
 volume_main = modal.NetworkFileSystem.from_name("stable-diffusion-webui-main", create_if_missing=True)
 
 # Paths definition
@@ -127,16 +127,10 @@ model_ids = [
         "config_file_path": "",
         "model_name": "Deliberate_v2.safetensors",
     },
-    {
-        "repo_id": "WarriorMama777/OrangeMixs",
-        "model_path": "Models/BloodOrangeMix/BloodNightOrangeMix.ckpt",
-        "config_file_path": "",
-        "model_name": "BloodNightOrangeMix.ckpt",
-    },
 ]
 
 
-@stub.function(
+@app.function(
     # For forcing the docker image to rebuild
     # https://modal.com/docs/guide/custom-container#forcing-an-image-to-rebuild
     # image=modal.Image.from_registry("python:3.10.6-slim", force_build=True)
@@ -182,7 +176,7 @@ model_ids = [
         "lark==1.1.2",
         "inflection==0.5.1",
         "GitPython==3.1.32",
-        "torchsde==0.2.5",
+        "torchsde==0.2.6",
         "safetensors==0.3.1",
         "httpcore==0.15",
         "tensorboard==2.9.1",
@@ -207,7 +201,7 @@ model_ids = [
     .pip_install(
         "git+https://github.com/mlfoundations/open_clip.git@bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b"
     ),
-    secret=modal.Secret.from_name("my-huggingface-secret"),
+    secrets=[modal.Secret.from_name("my-huggingface-secret")],
     network_file_systems={webui_dir: volume_main},
     # Designate the target GPU
     gpu="A10G",
@@ -277,7 +271,7 @@ async def run_stable_diffusion_webui():
     start()
 
 
-@stub.local_entrypoint()
+@app.local_entrypoint()
 def main():
     run_stable_diffusion_webui.remote()
 ```
@@ -292,7 +286,7 @@ import modal
 import subprocess
 from concurrent import futures
 
-stub = modal.Stub("stable-diffusion-webui-download-output")
+app = modal.App("stable-diffusion-webui-download-output")
 
 volume_key = "stable-diffusion-webui-main"
 volume = modal.NetworkFileSystem.from_name(volume_key)
@@ -302,7 +296,7 @@ remote_outputs_dir = "outputs"
 output_dir = "./outputs"
 
 
-@stub.function(
+@app.function(
     network_file_systems={webui_dir: volume},
 )
 def list_output_image_path(cache: list[str]):
@@ -329,7 +323,7 @@ def download_image_using_modal(image_path: str):
     )
 
 
-@stub.local_entrypoint()
+@app.local_entrypoint()
 def main():
     cache = []
 
@@ -363,6 +357,33 @@ modal run stable-diffusion-webui.py
 ## How to download generated pictures into your local machine
 ```
 modal run download-output.py
+```
+or if you want to download all your pics you created today, simultaneously want to delete all pics on the modal server for a tommorow's working, create script file as follows and run it.
+
+`get-and-remove.sh`
+```
+#!/bin/bash
+
+# Get today's date
+today=$(date +%Y-%m-%d)
+
+# Base variables for running commands
+nfs_storage_name="stable-diffusion-webui-main"
+output_dir="outputs/txt2img-images/${today}"
+
+# Get command
+get_command="modal nfs get ${nfs_storage_name} ${output_dir}/*"
+
+# Remove command
+rm_command="modal nfs rm -r ${nfs_storage_name} outputs/"
+
+# Run commands
+echo "Command for running:"
+echo "$get_command"
+eval "$get_command"
+
+echo "$rm_command"
+eval "$rm_command"
 ```
 
 ## As for LoRA file addition

@@ -6,7 +6,7 @@ import modal
 import subprocess
 from concurrent import futures
 
-stub = modal.Stub("stable-diffusion-webui-download-output")
+app = modal.App("stable-diffusion-webui-download-output")
 
 volume_key = "stable-diffusion-webui-main"
 volume = modal.NetworkFileSystem.from_name(volume_key)
@@ -16,7 +16,7 @@ remote_outputs_dir = "outputs"
 output_dir = "./outputs"
 
 
-@stub.function(
+@app.function(
     network_file_systems={webui_dir: volume},
 )
 def list_output_image_path(cache: list[str]):
@@ -43,7 +43,7 @@ def download_image_using_modal(image_path: str):
     )
 
 
-@stub.local_entrypoint()
+@app.local_entrypoint()
 def main():
     cache = []
 

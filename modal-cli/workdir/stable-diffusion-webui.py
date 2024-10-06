@@ -13,8 +13,10 @@ import shlex
 import os
 
 # Variables definition related to Modal service
-stub = modal.Stub("stable-diffusion-webui")
-volume_main = modal.NetworkFileSystem.from_name("stable-diffusion-webui-main", create_if_missing=True)
+app = modal.App("stable-diffusion-webui")
+volume_main = modal.NetworkFileSystem.from_name(
+    "stable-diffusion-webui-main", create_if_missing=True
+)
 
 # Paths definition
 webui_dir = "/content/stable-diffusion-webui"
@@ -28,16 +30,10 @@ model_ids = [
         "config_file_path": "",
         "model_name": "Deliberate_v2.safetensors",
     },
-    {
-        "repo_id": "WarriorMama777/OrangeMixs",
-        "model_path": "Models/BloodOrangeMix/BloodNightOrangeMix.ckpt",
-        "config_file_path": "",
-        "model_name": "BloodNightOrangeMix.ckpt",
-    },
 ]
 
 
-@stub.function(
+@app.function(
     # For forcing the docker image to rebuild
     # https://modal.com/docs/guide/custom-container#forcing-an-image-to-rebuild
     # image=modal.Image.from_registry("python:3.10.6-slim", force_build=True)
@@ -83,7 +79,7 @@ model_ids = [
         "lark==1.1.2",
         "inflection==0.5.1",
         "GitPython==3.1.32",
-        "torchsde==0.2.5",
+        "torchsde==0.2.6",
         "safetensors==0.3.1",
         "httpcore==0.15",
         "tensorboard==2.9.1",
@@ -178,6 +174,6 @@ async def run_stable_diffusion_webui():
     start()
 
 
-@stub.local_entrypoint()
+@app.local_entrypoint()
 def main():
     run_stable_diffusion_webui.remote()
