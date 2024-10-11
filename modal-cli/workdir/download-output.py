@@ -6,19 +6,22 @@ import modal
 import subprocess
 from concurrent import futures
 
-app = modal.App("stable-diffusion-webui-download-output")
+app = modal.App("sdwebui-camenduru-download-function")
 
-volume_key = "stable-diffusion-webui-main"
-volume = modal.NetworkFileSystem.from_name(volume_key)
+vol_key = "sdwebui-camenduru-vol"
+vol = modal.Volume.from_name(vol_key)
 
-webui_dir = "/content/stable-diffusion-webui/"
+mount_point = "/workdir"
+app_root = "/stable-diffusion-webui/"
+webui_dir = mount_point + app_root
 remote_outputs_dir = "outputs"
 output_dir = "./outputs"
 
 
 @app.function(
-    network_file_systems={webui_dir: volume},
+    volumes={mount_point: vol},
 )
+
 def list_output_image_path(cache: list[str]):
     absolute_remote_outputs_dir = os.path.join(webui_dir, remote_outputs_dir)
     image_path_list = []
@@ -38,7 +41,7 @@ def download_image_using_modal(image_path: str):
     download_dest = os.path.dirname(os.path.join(output_dir, image_path))
     os.makedirs(download_dest, exist_ok=True)
     subprocess.run(
-        f"modal nfs get {volume_key} {os.path.join(remote_outputs_dir, image_path)} {download_dest}",
+        f"modal volume get {vol_key} {app_root}{os.path.join(remote_outputs_dir, image_path)} {download_dest}",
         shell=True,
     )
 

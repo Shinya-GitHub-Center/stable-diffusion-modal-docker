@@ -4,14 +4,15 @@
 today=$(date +%Y-%m-%d)
 
 # Base variables for running commands
-nfs_storage_name="stable-diffusion-webui-main"
-output_dir="outputs/txt2img-images/${today}"
+volume_name="sdwebui-camenduru-vol"
+output_dir="/stable-diffusion-webui/outputs/txt2img-images/${today}"
+local_output_dir="./outputs"
 
 # Get command
-get_command="modal nfs get ${nfs_storage_name} ${output_dir}/*"
+get_command="modal volume get ${volume_name} ${output_dir}/ ${local_output_dir}"
 
 # Remove command
-rm_command="modal nfs rm -r ${nfs_storage_name} outputs/"
+rm_command="modal volume rm -r ${volume_name} /stable-diffusion-webui/outputs/"
 
 # Run commands
 echo "Command for running:"

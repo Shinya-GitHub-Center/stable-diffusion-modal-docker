@@ -13,13 +13,12 @@ import shlex
 import os
 
 # Variables definition related to Modal service
-app = modal.App("stable-diffusion-webui")
-volume_main = modal.NetworkFileSystem.from_name(
-    "stable-diffusion-webui-main", create_if_missing=True
-)
+app = modal.App("sdwebui-camenduru-app")
+vol = modal.Volume.from_name("sdwebui-camenduru-vol", create_if_missing=True)
 
 # Paths definition
-webui_dir = "/content/stable-diffusion-webui"
+mount_point = "/workdir"
+webui_dir = mount_point + "/stable-diffusion-webui"
 webui_model_dir = webui_dir + "/models/Stable-diffusion/"
 
 # Model IDs on Hugging Face
@@ -105,13 +104,14 @@ model_ids = [
         "git+https://github.com/mlfoundations/open_clip.git@bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b"
     ),
     secrets=[modal.Secret.from_name("my-huggingface-secret")],
-    network_file_systems={webui_dir: volume_main},
+    volumes={mount_point: vol},
     # Designate the target GPU
     gpu="A10G",
     # gpu=modal.gpu.A10G(count=2),
     # gpu=modal.gpu.T4(count=2),
     timeout=12000,
 )
+
 async def run_stable_diffusion_webui():
     print(Fore.CYAN + "\n---------- Start setting up for all models ----------\n")
 

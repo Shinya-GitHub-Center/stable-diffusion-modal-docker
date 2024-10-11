@@ -15,7 +15,7 @@ modal.com => LOG IN => SETTINGS => New Token => copy the command showed up below
 huggingface.co => Log In => settings => Access Tokens => New token => copy it
 
 ## Paste the huggingface Token to modal's secret
-modal.com => LOG IN => SECRETS => Create new secret => Hugging Face => Paste the value (key : HUGGINGFACE_TOKEN) => next => set the secret name to "my-huggingface-secret" => create
+modal.com => LOG IN => SECRETS => Create new secret => Hugging Face => Paste the value (key : HF_TOKEN) => next => set the secret name to "my-huggingface-secret" => create
 
 ## Create this directory into your local machine (I named the root directory name `stable-diffusion-modal-docker`)
 
@@ -112,11 +112,12 @@ import shlex
 import os
 
 # Variables definition related to Modal service
-app = modal.App("stable-diffusion-webui")
-volume_main = modal.NetworkFileSystem.from_name("stable-diffusion-webui-main", create_if_missing=True)
+app = modal.App("sdwebui-camenduru-app")
+vol = modal.Volume.from_name("sdwebui-camenduru-vol", create_if_missing=True)
 
 # Paths definition
-webui_dir = "/content/stable-diffusion-webui"
+mount_point = "/workdir"
+webui_dir = mount_point + "/stable-diffusion-webui"
 webui_model_dir = webui_dir + "/models/Stable-diffusion/"
 
 # Model IDs on Hugging Face
@@ -202,13 +203,14 @@ model_ids = [
         "git+https://github.com/mlfoundations/open_clip.git@bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b"
     ),
     secrets=[modal.Secret.from_name("my-huggingface-secret")],
-    network_file_systems={webui_dir: volume_main},
+    volumes={mount_point: vol},
     # Designate the target GPU
     gpu="A10G",
     # gpu=modal.gpu.A10G(count=2),
     # gpu=modal.gpu.T4(count=2),
     timeout=12000,
 )
+
 async def run_stable_diffusion_webui():
     print(Fore.CYAN + "\n---------- Start setting up for all models ----------\n")
 
@@ -286,19 +288,22 @@ import modal
 import subprocess
 from concurrent import futures
 
-app = modal.App("stable-diffusion-webui-download-output")
+app = modal.App("sdwebui-camenduru-download-function")
 
-volume_key = "stable-diffusion-webui-main"
-volume = modal.NetworkFileSystem.from_name(volume_key)
+vol_key = "sdwebui-camenduru-vol"
+vol = modal.Volume.from_name(vol_key)
 
-webui_dir = "/content/stable-diffusion-webui/"
+mount_point = "/workdir"
+app_root = "/stable-diffusion-webui/"
+webui_dir = mount_point + app_root
 remote_outputs_dir = "outputs"
 output_dir = "./outputs"
 
 
 @app.function(
-    network_file_systems={webui_dir: volume},
+    volumes={mount_point: vol},
 )
+
 def list_output_image_path(cache: list[str]):
     absolute_remote_outputs_dir = os.path.join(webui_dir, remote_outputs_dir)
     image_path_list = []
@@ -318,7 +323,7 @@ def download_image_using_modal(image_path: str):
     download_dest = os.path.dirname(os.path.join(output_dir, image_path))
     os.makedirs(download_dest, exist_ok=True)
     subprocess.run(
-        f"modal nfs get {volume_key} {os.path.join(remote_outputs_dir, image_path)} {download_dest}",
+        f"modal volume get {vol_key} {app_root}{os.path.join(remote_outputs_dir, image_path)} {download_dest}",
         shell=True,
     )
 
@@ -368,14 +373,15 @@ or if you want to download all your pics you created today, simultaneously want 
 today=$(date +%Y-%m-%d)
 
 # Base variables for running commands
-nfs_storage_name="stable-diffusion-webui-main"
-output_dir="outputs/txt2img-images/${today}"
+volume_name="sdwebui-camenduru-vol"
+output_dir="/stable-diffusion-webui/outputs/txt2img-images/${today}"
+local_output_dir="./outputs"
 
 # Get command
-get_command="modal nfs get ${nfs_storage_name} ${output_dir}/*"
+get_command="modal volume get ${volume_name} ${output_dir}/ ${local_output_dir}"
 
 # Remove command
-rm_command="modal nfs rm -r ${nfs_storage_name} outputs/"
+rm_command="modal volume rm -r ${volume_name} /stable-diffusion-webui/outputs/"
 
 # Run commands
 echo "Command for running:"
