@@ -4,6 +4,27 @@ How to deploy Stable Diffusion via Docker container using modal client
 ![logotype-bb8cd083](https://github.com/Shinya-GitHub-Center/stable-diffusion-modal-docker/assets/129726604/071b609b-7ba7-4435-8da4-f22b5fa99791)
 ![horizontal-logo-monochromatic-white](https://github.com/Shinya-GitHub-Center/stable-diffusion-modal-docker/assets/129726604/7fcbb3c4-e62d-408b-b49b-fc4f9702952a)
 
+## [Mr. CP20's philosophy](https://github.com/cp-20) (He uses [camenduru's version](https://github.com/camenduru/stable-diffusion-webui))
+```bash
+Modal Server
+└── Container image : image=modal.Image.from_registry("python:3.10.6-slim")
+    │
+    ├──> pip modules installation
+    │   └── .pip_install()
+    │
+    └──> /workdir
+        │
+        └── Mount volume : volumes={"/workdir": vol} ⬇️ persistent volume
+            └── /stable-diffusion-webui/
+                ├── models/
+                └── outputs/
+```
+
+- Required python modules are directly installed into modal server's container image (environment)
+- Application (webui) is stored at a separated persistent volume, which is attached to the original container image via mount point (`/workdir`)
+- Created images will be stored at `outputs/` directory inside the persistent volume
+- (Required python modules are not installed into venv environment - which is supposed to be located at the same volume as the main webui app)
+
 ## About
 I recommend using python docker container instead of using venv, since `download-output.py` does not work properly if the host machine's python version is 3.8 (default version of ubuntu20.04)
 
@@ -444,6 +465,9 @@ If you want to rebuild docker image, such as for updating to the latest modules 
 ```
 image=modal.Image.from_registry("python:3.10.6-slim", force_build=True)
 ```
+
+## Etc
+If you have multiple environment for your workspace on modal, you may need to add `-e<your_env_name>` option for all modal commands.
 
 ## Reference URL
 https://qiita.com/fkgw/items/eaa431b974af20b57179  
