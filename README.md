@@ -416,46 +416,46 @@ eval "$rm_command"
 ## As for LoRA file addition
 Put the LoRA files into Lora directory and execute the following command
 ```
-modal nfs put stable-diffusion-webui-main models/Lora/<lora file name> models/Lora/
+modal volume put sd-camenduru-v2.7-vol models/Lora/<lora file name> /stable-diffusion-webui/models/Lora/
 ```
 Alternatively, you can upload whole directory into Modal server - for multiple LoRA files at a time  
 (this procedure will overwrite the previously located any Lora files)
 ```
-modal nfs put stable-diffusion-webui-main models/Lora/ models/Lora/
+modal volume put sd-camenduru-v2.7-vol models/Lora/ /stable-diffusion-webui/models/Lora/
 ```
 
 ## As for VAE file addition
 Put the VAE files into VAE directory and execute the following command
 ```
-modal nfs put stable-diffusion-webui-main models/VAE/<vae file name> models/VAE/
+modal volume put sd-camenduru-v2.7-vol models/VAE/<vae file name> /stable-diffusion-webui/models/VAE/
 ```
 Alternatively, you can upload whole directory into Modal server - for multiple VAE files at a time  
 (this procedure will overwrite the previously located any VAE files)
 ```
-modal nfs put stable-diffusion-webui-main models/VAE/ models/VAE/
+modal volume put sd-camenduru-v2.7-vol models/VAE/ /stable-diffusion-webui/models/VAE/
 ```
 
 ## As for adding models manually
 Put any model files (including base and refiner models) into Stable-diffusion directory and execute the following command
 ```
-modal nfs put stable-diffusion-webui-main models/Stable-diffusion/<model file name> models/Stable-diffusion/
+modal volume put sd-camenduru-v2.7-vol models/Stable-diffusion/<model file name> /stable-diffusion-webui/models/Stable-diffusion/
 ```
 or, whole directory at once  
 (this procedure will overwrite the previously located any models)
 ```
-modal nfs put stable-diffusion-webui-main models/Stable-diffusion/ models/Stable-diffusion/
+modal volume put sd-camenduru-v2.7-vol models/Stable-diffusion/ /stable-diffusion-webui/models/Stable-diffusion/
 ```
 
 ## As for adding embedding files
 Put any embedding files into `workdir/embeddings/` folder then,
 ```
-modal nfs put stable-diffusion-webui-main embeddings/<embedding file name> embeddings/
+modal volume put sd-camenduru-v2.7-vol embeddings/<embedding file name> /stable-diffusion-webui/embeddings/
 ```
 
 ## As for deleting outputs folder on Modal server
 Sometimes upon executing `download-output.py`, the previously downloaded files are downloaded again, to prevent this, please execute the following command prior to creating any new pictures with stable diffusion webui
 ```
-modal nfs rm -r stable-diffusion-webui-main outputs/
+modal volume rm -r sd-camenduru-v2.7-vol /stable-diffusion-webui/outputs/
 ```
 
 ## As for forcing the docker image to rebuild
