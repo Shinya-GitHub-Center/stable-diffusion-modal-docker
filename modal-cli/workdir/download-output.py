@@ -8,7 +8,7 @@ from concurrent import futures
 
 app = modal.App("sdwebui-camenduru-download-function")
 
-vol_key = "sdwebui-camenduru-vol"
+vol_key = "sd-camenduru-v2.7-vol"
 vol = modal.Volume.from_name(vol_key)
 
 mount_point = "/workdir"

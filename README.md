@@ -133,8 +133,8 @@ import shlex
 import os
 
 # Variables definition related to Modal service
-app = modal.App("sdwebui-camenduru-app")
-vol = modal.Volume.from_name("sdwebui-camenduru-vol", create_if_missing=True)
+app = modal.App("sd-camenduru-v2.7-app")
+vol = modal.Volume.from_name("sd-camenduru-v2.7-vol", create_if_missing=True)
 
 # Paths definition
 mount_point = "/workdir"
@@ -311,7 +311,7 @@ from concurrent import futures
 
 app = modal.App("sdwebui-camenduru-download-function")
 
-vol_key = "sdwebui-camenduru-vol"
+vol_key = "sd-camenduru-v2.7-vol"
 vol = modal.Volume.from_name(vol_key)
 
 mount_point = "/workdir"
@@ -394,7 +394,7 @@ or if you want to download all your pics you created today, simultaneously want 
 today=$(date +%Y-%m-%d)
 
 # Base variables for running commands
-volume_name="sdwebui-camenduru-vol"
+volume_name="sd-camenduru-v2.7-vol"
 output_dir="/stable-diffusion-webui/outputs/txt2img-images/${today}"
 local_output_dir="./outputs"
 

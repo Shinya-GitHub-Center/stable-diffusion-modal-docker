@@ -13,8 +13,8 @@ import shlex
 import os
 
 # Variables definition related to Modal service
-app = modal.App("sdwebui-camenduru-app")
-vol = modal.Volume.from_name("sdwebui-camenduru-vol", create_if_missing=True)
+app = modal.App("sd-camenduru-v2.7-app")
+vol = modal.Volume.from_name("sd-camenduru-v2.7-vol", create_if_missing=True)
 
 # Paths definition
 mount_point = "/workdir"

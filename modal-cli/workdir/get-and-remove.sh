@@ -4,7 +4,7 @@
 today=$(date +%Y-%m-%d)
 
 # Base variables for running commands
-volume_name="sdwebui-camenduru-vol"
+volume_name="sd-camenduru-v2.7-vol"
 output_dir="/stable-diffusion-webui/outputs/txt2img-images/${today}"
 local_output_dir="./outputs"
 
