@@ -2,7 +2,7 @@
 # please change the both value for UID & GID `1000`
 # to your desired ID number.
 
-FROM python:3.10.6
+FROM python:3.11
 ARG USERNAME=sd-webui
 ARG GROUPNAME=sd-webui
 ARG UID=1000

@@ -4,15 +4,16 @@
 today=$(date +%Y-%m-%d)
 
 # Base variables for running commands
-volume_name="sdwebui-camenduru-vol"
-output_dir="/stable-diffusion-webui/outputs/txt2img-images/${today}"
+volume_name="sd_shared_outputs"
+output_dir="/txt2img-images/${today}"
 local_output_dir="./outputs"
 
 # Get command
 get_command="modal volume get ${volume_name} ${output_dir}/ ${local_output_dir}"
 
 # Remove command
-rm_command="modal volume rm -r ${volume_name} /stable-diffusion-webui/outputs/"
+rm_command="modal volume rm -r ${volume_name} /txt2img-grids/${today} && \
+    modal volume rm -r ${volume_name} /txt2img-images/${today}"
 
 # Run commands
 echo "Command for running:"
