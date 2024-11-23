@@ -5,6 +5,7 @@ import modal
 PORT = 8000
 
 env_app_image = (
+    # modal.Image.debian_slim(python_version="3.11", force_build=True)
     modal.Image.debian_slim(python_version="3.11")
     .apt_install(
         "wget",
