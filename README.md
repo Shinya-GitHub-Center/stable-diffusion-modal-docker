@@ -52,15 +52,72 @@ Please run the command `bash ./get-and-remove.sh`
 
 ## How to manually upload locally stored models, Lora, VAE, and embeddings files
 
-Of course, under construction
+### For model files one by one
+Put any model files (including base and refiner models) into your local `Stable-diffusion` directory and execute the following command to proceed uploading
 
-## As for forcing the docker image on modal server to rebuild
+`@workdir`
+```
+modal volume put sd_shared_models models/Stable-diffusion/<model_file_name> /Stable-diffusion/
+```
+### For whole model directory at once  (suitable for the first time of the whole directory uploading)
+Warning! : this procedure will be failed if the same model (file) names are already located on the modal server (not overwrite the whole model directory though...)
+
+`@workdir`
+```
+modal volume put sd_shared_models models/Stable-diffusion/ /Stable-diffusion/
+```
+
+### For Lora files one by one
+Put any Lora files into your local `Lora` directory and execute the following command to proceed uploading
+
+`@workdir`
+```
+modal volume put sd_shared_models models/Lora/<lora_file_name> /Lora/
+```
+
+### For whole Lora directory at once  (suitable for the first time of the whole directory uploading)
+Warning! : this procedure will be failed if the same lora (file) names are already located on the modal server (not overwrite the whole lora directory though...)
+
+`@workdir`
+```
+modal volume put sd_shared_models models/Lora/ /Lora/
+```
+
+### For VAE files one by one
+Put any VAE files into your local `VAE` directory and execute the following command to proceed uploading
+
+`@workdir`
+```
+modal volume put sd_shared_models models/VAE/<vae_file_name> /VAE/
+```
+
+### For whole VAE directory at once  (suitable for the first time of the whole directory uploading)
+Warning! : this procedure will be failed if the same VAE (file) names are already located on the modal server (not overwrite the whole VAE directory though...)
+
+`@workdir`
+```
+modal volume put sd_shared_models models/VAE/ /VAE/
+```
+
+### For embedding files one by one
+Put any embedding files into your local `embeddings` directory and execute the following command to proceed uploading
+
+`@workdir`
+```
+modal volume put sd_shared_embeddings embeddings/<embedding_file_name> /
+```
+
+## Etc...
+### As for forcing the docker image on modal server to rebuild
 If you want to rebuild docker image on modal server, such as for updating to the latest modules or packages
 
 `webui.py`
 ```
 modal.Image.debian_slim(python_version="3.11", force_build=True)
 ```
+
+### How to designate your workspace environment upon executing any modal commands
+If you have multiple environment for your workspace on modal, you may need to add `-e<your_env_name>` option for all modal commands. (You can ignore this if you have already set your favored environment via `.modal.toml`)
 
 ## Reference URL
 [Official modal example](https://github.com/modal-labs/modal-examples/blob/main/06_gpu_and_ml/stable_diffusion/a1111_webui.py)
