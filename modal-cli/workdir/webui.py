@@ -74,6 +74,7 @@ accelerate launch \
         --skip-prepare-environment \
         --no-gradio-queue \
         --listen \
+        --enable-insecure-extension-access \
         --port {PORT}
 """
     subprocess.Popen(START_COMMAND, shell=True)
