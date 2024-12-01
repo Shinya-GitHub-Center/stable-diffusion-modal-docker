@@ -16,7 +16,7 @@ env_app_image = (
     )
     .env({"LD_PRELOAD": "/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4"})
     .run_commands(
-        "git clone --depth 1 --branch v1.7.0 https://github.com/AUTOMATIC1111/stable-diffusion-webui /webui",
+        "git clone --depth 1 --branch v1.10.0 https://github.com/AUTOMATIC1111/stable-diffusion-webui /webui",
         "python -m venv /webui/venv",
         "cd /webui && . venv/bin/activate && "
         + "python -c 'from modules import launch_utils; launch_utils.prepare_environment()' --xformers",
@@ -40,7 +40,7 @@ shared_extensions = modal.Volume.from_name("sd_shared_extensions", create_if_mis
 shared_outputs = modal.Volume.from_name("sd_shared_outputs", create_if_missing=True)
 
 app = modal.App(
-    "sd-a1111-v1.7.0-app",
+    "sd-a1111-v1.10.0-app",
     image=env_app_image,
     volumes={
         "/webui/models": shared_models,

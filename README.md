@@ -120,8 +120,10 @@ modal.Image.debian_slim(python_version="3.11", force_build=True)
 If you have multiple environment for your workspace on modal, you may need to add `-e<your_env_name>` option for all modal commands. (You can ignore this if you have already set your favored environment via `.modal.toml`)
 
 ### How to make `style.css` persistent
-Please install [Styles-Editor extension](https://github.com/chrisgoringe/Styles-Editor.git) and set your prompts into this extension's tab. (Data will be auto-saved in every 10 mins)  
-If you want to restore data, please select the latest date-and-time csv file from dropdown menu then click restore from Styles-Editor tab.
+~~Please install [Styles-Editor extension](https://github.com/chrisgoringe/Styles-Editor.git) and set your prompts into this extension's tab. (Data will be auto-saved in every 10 mins)  
+If you want to restore data, please select the latest date-and-time csv file from dropdown menu then click restore from Styles-Editor tab.~~
+
+The Styles-Editor extension does not work on this v1.10.0 webui. I am currently searching for an alternative method so that you can store style settings... 
 
 ## Reference URL
 [Official modal example](https://github.com/modal-labs/modal-examples/blob/main/06_gpu_and_ml/stable_diffusion/a1111_webui.py)
