@@ -103,7 +103,7 @@ model_ids = [
     .pip_install(
         "git+https://github.com/mlfoundations/open_clip.git@bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b"
     ),
-    secrets=[modal.Secret.from_name("my-huggingface-secret")],
+    secrets=[modal.Secret.from_name("huggingface-secret")],
     volumes={mount_point: vol},
     # Designate the target GPU
     gpu="A10G",

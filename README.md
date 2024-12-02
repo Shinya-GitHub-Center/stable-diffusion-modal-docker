@@ -36,7 +36,7 @@ modal.com => LOG IN => SETTINGS => New Token => copy the command showed up below
 huggingface.co => Log In => settings => Access Tokens => New token => copy it
 
 ## Paste the huggingface Token to modal's secret
-modal.com => LOG IN => SECRETS => Create new secret => Hugging Face => Paste the value (key : HF_TOKEN) => next => set the secret name to "my-huggingface-secret" => create
+modal.com => LOG IN => SECRETS => Create new secret => Hugging Face => Paste the value (key : HF_TOKEN) => next => set the secret name to "huggingface-secret" => create
 
 ## Create this directory into your local machine (I named the root directory name `stable-diffusion-modal-docker`)
 
@@ -223,7 +223,7 @@ model_ids = [
     .pip_install(
         "git+https://github.com/mlfoundations/open_clip.git@bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b"
     ),
-    secrets=[modal.Secret.from_name("my-huggingface-secret")],
+    secrets=[modal.Secret.from_name("huggingface-secret")],
     volumes={mount_point: vol},
     # Designate the target GPU
     gpu="A10G",
