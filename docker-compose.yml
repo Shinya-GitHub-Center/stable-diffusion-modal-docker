@@ -15,6 +15,9 @@ services:
       - type: bind
         source: ./modal-cli/.modal.toml
         target: /home/sd-webui/.modal.toml
+      - type: bind
+        source: ./modal-cli/.bash_aliases
+        target: /home/sd-webui/.bash_aliases
     user: sd-webui
     tty: true
     stdin_open: true
