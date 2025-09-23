@@ -29,5 +29,5 @@ putdirvae() {
 }
 
 putembedding() {
-    command modal volume put sd_shared_models /home/sd-webui/workdir/embeddings/"$1" /
+    command modal volume put sd_shared_embeddings /home/sd-webui/workdir/embeddings/"$1" /
 }
