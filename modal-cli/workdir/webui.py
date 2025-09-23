@@ -56,9 +56,11 @@ app = modal.App(
     cpu=2,
     memory=1024,
     timeout=12000,
-    allow_concurrent_inputs=100,
-    keep_warm=1,
+    min_containers=1,
 )
+
+@modal.concurrent(max_inputs=100)
+
 @modal.web_server(port=PORT, startup_timeout=180)
 def run():
     START_COMMAND = f"""
