@@ -1,4 +1,5 @@
 [default]
 token_id = "aa-aaaaaa"
 token_secret = "bb-bbbbbb"
-# environment = "working_env_name"
+environment = "working_env_name"
+active = true
