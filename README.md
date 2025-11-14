@@ -26,13 +26,15 @@ modal.com => LOG IN => SETTINGS => New Token => copy the command showed up below
 [default]
 token_id = "aa-aaaaaa"
 token_secret = "bb-bbbbbb"
-# environment = "working_env_name"
+environment = "working_env_name"
+active = true
 ```
 Please replace `aa-aaaaaa` and `bb-bbbbbb` with your previously copied modal token id and secret  
 (modal token set --token-id **aa-aaaaaa** --token-secret **bb-bbbbbb**)  
-You can also set the modal server's working environment for this project to work (skippable)
+I advise you to set the modal server's working environment name only for this project to separately use  
+This modal profile via docker has been isolated from your host PC, so the activation value is always true
 
-Please make sure any spaces is not included at the end of both id and secret
+**Please make sure any spaces is not included at the end of both id and secret**
 
 ## How to deploy docker container
 @project's root directory
